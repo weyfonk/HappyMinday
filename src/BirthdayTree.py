@@ -7,7 +7,6 @@ Created on 21.03.2015
 from datetime import date
 from lxml import etree
 import calendar
-import os
 
 class BirthdayTree(object):
     '''
@@ -27,7 +26,12 @@ class BirthdayTree(object):
 
         
     def add_entry(self, name, month, day, year):
-        print('month: ', month)
+
+        existingEntry = self.find_by_name(name)
+        if existingEntry is not None:
+            print('''An entry already exists for {0}. 
+Please update the existing name or use a new one'''.format(name))
+            return False
             
         currentMonthNodes = self._root.findall(".//month/[@index='{0}']".format(month))
         
@@ -68,7 +72,6 @@ class BirthdayTree(object):
             
             dayNode = etree.Element('day')
             dayNode.set('index', str(day))
-#                 print(etree.tostring(dayNode, pretty_print = True))
 
             if indexAfterInsert < 0:
                 monthNode.append(dayNode)
@@ -77,18 +80,15 @@ class BirthdayTree(object):
         else:
             print("day found")    
             dayNode = currentDayNodes[0]
-#                 print(etree.tostring(dayNode, pretty_print = True))
             
         newBirthday = etree.SubElement(dayNode, 'person')
         newBirthday.set('name', name)
         newBirthday.set('year', str(year))
-#             print(etree.tostring(newBirthday, pretty_print = True))
-        
-#             print(etree.tostring(monthNode, pretty_print = True))
             
-#             ET.dump(monthNode)
-        self._data.write(self._path)
-        self.indent(self._root, 0)                
+        self.save_file()
+        self.indent(self._root, 0)
+        self.search_name_entry(name)
+        return True                
     
     
     def count_entries(self):
@@ -106,13 +106,13 @@ class BirthdayTree(object):
         parent = nameNode.getparent()
         
         parent.remove(nameNode)
-        self._data.write(self._path)
+        self.save_file()
         
         print('Birthday deleted for {0}'.format(name))
         
     
     def search_name_entry(self, name):
-        nameNode = self._root.find(".//person[@name='{0}']".format(name))
+        nameNode = self.find_by_name(name)
         if nameNode is None:
             print('Name not found: {0}'.format(name))
             return
@@ -163,6 +163,22 @@ class BirthdayTree(object):
     def show_next_month_data(self):
         self.search_next_entries(True, 1)
     
+    
+    def update_entry(self, oldName, newName):
+        nodeToUpdate = self.find_by_name(oldName)
+
+        if nodeToUpdate is None:
+            print('No birthday found for {0} to update'.format(oldName))
+            return
+        nodeToUpdate.set('name', newName)
+        print('Name updated for {0}. New name: {1}'.format(oldName, newName))
+        self.save_file()
+    
+    
+    def find_by_name(self, name):
+        result = self._root.find(".//person[@name='{0}']".format(name))
+        return result
+    
     def indent(self, elem, level=0):
         i = "\n" + level*"  "
         if len(elem):
@@ -184,4 +200,7 @@ class BirthdayTree(object):
     
     def is_empty(self):
         return len(list(self._root.iter('month'))) == 0
+        
+    def save_file(self):
+        self._data.write(self._path)
             

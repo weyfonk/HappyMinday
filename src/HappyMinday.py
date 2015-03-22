@@ -42,9 +42,10 @@ def main(argv):
             day = int(argv[3])
             year = int(argv[4])
             
-            bt.add_entry(person, month, day, year)
+            result = bt.add_entry(person, month, day, year)
             
-            print('Birthday added')
+            if(result):
+                print('Birthday added')
 
         if argv[0].upper() == '-S':
             
@@ -71,6 +72,11 @@ def main(argv):
             
         if argv[0].upper() == '-C':
             bt.count_entries()
+            
+        if argv[0].upper() == '-U':
+            oldName = argv[1]
+            newName = argv[2]
+            bt.update_entry(oldName, newName)
             
 
 def validate_date(month, day, year):
