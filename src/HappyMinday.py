@@ -13,7 +13,8 @@ from datetime import date
 from BirthdayTree import BirthdayTree
 
 def main(argv):
-    path = os.path.abspath('birthdays.xml')
+    fileName = 'birthdays.xml'
+    path = os.path.abspath(fileName)
     
     bt = BirthdayTree(path)
 
@@ -77,6 +78,8 @@ def main(argv):
             oldName = argv[1]
             newName = argv[2]
             bt.update_entry(oldName, newName)
+            
+        bt.indent(bt._root, 0)
             
 
 def validate_date(month, day, year):

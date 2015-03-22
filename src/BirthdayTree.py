@@ -7,6 +7,7 @@ Created on 21.03.2015
 from datetime import date
 from lxml import etree
 import calendar
+import os
 
 class BirthdayTree(object):
     '''
@@ -19,6 +20,12 @@ class BirthdayTree(object):
         Constructor
         '''
         self._path = path
+        
+        if not os.path.exists(path):
+            print('No existing file at {0}. Creating file...'.format(path))
+            self.create_new_file()
+            print('New file created at {0}'.format(path))
+        
         self._data = etree.parse(path) #minidom.parse(path)
         self._root = self._data.getroot()
 
@@ -95,6 +102,21 @@ Please update the existing name or use a new one'''.format(name))
         result = len(self._root.findall('.//person'))
         print('{0} birthdays in the database.'.format(result))
         
+    def create_new_file(self):
+        with open(self._path, mode = 'w', encoding = 'utf-8') as newFile:
+            root = etree.Element('birthdays')
+            newTree = etree.ElementTree(root)
+            
+            for month in range(1,13):
+                monthNode = etree.SubElement(root, 'month')
+                monthNode.set('index', str(month))
+            
+            newContents = etree.tostring(newTree)
+            print(newContents)
+            
+            newTree.write(self._path)
+            #self.save_file()    
+        
     
     def delete_entry(self, name):
         nameNode = self._root.find(".//person[@name='{0}']".format(name))
@@ -124,7 +146,7 @@ Please update the existing name or use a new one'''.format(name))
         age = date.today().year - int(year)
         # if birthday was earlier this year, show next year's age
         if(month < date.today().month 
-           or (month == date.today().month and day < date.today().day)):
+           or (month == date.today().month and int(day) < date.today().day)):
             age = age + 1
         
         print('Next birthday for {0}: {1} {2} ({3})'.format(
