@@ -189,10 +189,10 @@ Please update the existing name or use a new one'''.format(name))
         # relies on the monthly version in case the timespan covers more than a month
         else:
             savedInterval = interval
-            monthsInterval = 0
+            print('Birthdays between {0} and {1}:'.format(currentDate, currentDate + timedelta(days = savedInterval)))
             
             currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
-            print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
+            print('  in {0}: '.format(calendar.month_name[currentMonth]))
             for dayNode in currentMonthNode.iter('day'):
                 dayIndex = dayNode.get('index')
                 if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
@@ -205,7 +205,7 @@ Please update the existing name or use a new one'''.format(name))
                         )
             # if interval goes further than current month, add results for following months
             if savedInterval >= remainingDaysInMonth:
-                savedInterval = savedInterval - remainingDaysInMonth
+                savedInterval = savedInterval - remainingDaysInMonth - 1
                 self.search_next_entries(False, savedInterval, currentDate + timedelta(days = remainingDaysInMonth + 1))
     
         
