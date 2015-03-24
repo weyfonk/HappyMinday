@@ -4,7 +4,7 @@ Created on 21.03.2015
 @author: tan
 '''
 
-from datetime import date
+from datetime import date, timedelta
 from lxml import etree
 import calendar
 import os
@@ -156,30 +156,57 @@ Please update the existing name or use a new one'''.format(name))
 			age
 			))
     
-    def search_next_entries(self, searchByMonth, interval):
-        currentMonth = date.today().month
+    def search_next_entries(self, searchByMonth, interval, currentDate=date.today()):
 #         currentMonth = 12
-        lastMonth = (currentMonth + interval) % 12
+        lastMonth = (currentDate.month + interval) % 12
         
+        currentMonth = currentDate.month
+        nbDaysInCurrentMonth = calendar.monthrange(date.today().year, currentMonth)[1]
+        remainingDaysInMonth = nbDaysInCurrentMonth - currentDate.day
+        
+        # search entries for current month and the next ones
+        # depends on current day
+        # ex: if called on Oct. 12 for 2 months, covers Oct 12 to Dec 12
         if(searchByMonth):
+            daysInterval = remainingDaysInMonth
             for element in self._monthNodes:
                 localMonth = int(element.get('index'))
                 if( (lastMonth > currentMonth 
-                     and localMonth >= currentMonth 
-                     and localMonth < lastMonth)
+                     and currentMonth < localMonth < lastMonth)
                    or (lastMonth < currentMonth
-                     and(localMonth >= currentMonth
+                     and(localMonth > currentMonth
                       or localMonth < lastMonth))):
-                    print('Birthdays in {0}: '.format(calendar.month_name[localMonth]))
-                    for day in element.iter('day'):
-                        dayIndex = day.get('index')
-                        for person in day.iter('person'): 
-                            print('\t -{0}: {1} ({2})'.format(
-                                dayIndex,
-                                person.get('name'),
-                                date.today().year - int(person.get('year'))
-                                )
+                          nbDaysInLocalMonth = calendar.monthrange(date.today().year, localMonth)[1]
+                          daysInterval = daysInterval + nbDaysInLocalMonth
+                          
+                          
+                if localMonth == lastMonth:
+                    daysInterval = daysInterval + currentDate.day
+                    
+            self.search_next_entries(False, daysInterval, currentDate)
+
+        # search for next days
+        # relies on the monthly version in case the timespan covers more than a month
+        else:
+            savedInterval = interval
+            monthsInterval = 0
+            
+            currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
+            print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
+            for dayNode in currentMonthNode.iter('day'):
+                dayIndex = dayNode.get('index')
+                if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
+                    for person in dayNode.iter('person'): 
+                        print('\t -{0}: {1} ({2})'.format(
+                            dayIndex,
+                            person.get('name'),
+                            date.today().year - int(person.get('year'))
                             )
+                        )
+            # if interval goes further than current month, add results for following months
+            if savedInterval >= remainingDaysInMonth:
+                savedInterval = savedInterval - remainingDaysInMonth
+                self.search_next_entries(False, savedInterval, currentDate + timedelta(days = remainingDaysInMonth + 1))
     
         
     def show_next_month_data(self):
