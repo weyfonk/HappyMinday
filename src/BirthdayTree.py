@@ -9,6 +9,7 @@ from lxml import etree
 import calendar
 import os
 
+
 class BirthdayTree(object):
     '''
     classdocs
@@ -30,6 +31,19 @@ class BirthdayTree(object):
         self._root = self._data.getroot()
 
         self._monthNodes = self._root.iter('month')
+        
+        def lower_case(context, text):
+            """
+            XPath extension method to enable case-insensitive X-Path search
+            as explained at: http://lxml.de/extensions.html
+            """
+            result = []
+            for t in text:
+                result.append(t.lower())
+            return result
+        
+        ns = etree.FunctionNamespace(None)
+        ns['lower-case'] = lower_case
 
         
     def add_entry(self, name, month, day, year):
@@ -138,12 +152,15 @@ Please update the existing name or use a new one'''.format(name))
         
     
     def search_name_entry(self, name):
-        nameNode = self.find_by_name(name)
-        if nameNode is None:
+        nameNodes = self.find_by_name(name)
+        if nameNodes is None:
             print('Name not found: {0}'.format(name))
             return
         
+        nameNode = nameNodes[0] #idea: handle several results
+        
         year = nameNode.get('year')
+        realName = nameNode.get('name')
         month = int(nameNode.getparent().getparent().get('index'))
         monthStr = calendar.month_name[month]
         day = nameNode.getparent().get('index')
@@ -154,7 +171,7 @@ Please update the existing name or use a new one'''.format(name))
             age = age + 1
         
         print('Next birthday for {0}: {1} {2} ({3})'.format(
-			name, 
+			realName, 
 			monthStr,
             day,
 			age
@@ -229,7 +246,7 @@ Please update the existing name or use a new one'''.format(name))
     
     
     def find_by_name(self, name):
-        result = self._root.find(".//person[@name='{0}']".format(name))
+        result = self._root.xpath(".//person[lower-case(@name)='{0}']".format(name.lower()))
         return result
     
     def indent(self, elem, level=0):
@@ -256,4 +273,3 @@ Please update the existing name or use a new one'''.format(name))
         
     def save_file(self):
         self._data.write(self._path)
-            

@@ -78,6 +78,9 @@ def main(argv):
 
 
 def loop_insert_entries(birthdayTree):
+    """
+    Lets the user insert as many entries as wanted
+    """
     
     userInput = ''
     
@@ -97,6 +100,10 @@ def loop_insert_entries(birthdayTree):
             
 
 def validate_date(month, day, year):
+    """ 
+    Checks a date validity based on its day, month and year
+    Returns true if the date is valid, false otherwise
+    """
     if not month.isdigit() or not day.isdigit() or not year.isdigit():
         return False
     
@@ -116,9 +123,11 @@ def validate_date(month, day, year):
     return isDateOk
 
 
-''' Displays a message to the user, checks whether the user chose to quit the program.
- If no quit is needed, returns user input'''
 def validate_input(msg):
+    """ 
+    Displays a message to the user, checks whether the user chose to quit the program.
+    If no quit is needed, returns user input
+    """
     result = input(msg)
     if result.upper() == QUIT_KEY:
         print('Quitting.')
