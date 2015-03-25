@@ -39,6 +39,10 @@ class BirthdayTree(object):
             print('''An entry already exists for {0}. 
 Please update the existing name or use a new one'''.format(name))
             return False
+        
+        day = int(day)
+        month = int(month)
+        year = int(year)
             
         currentMonthNodes = self._root.findall(".//month/[@index='{0}']".format(month))
         
@@ -189,10 +193,10 @@ Please update the existing name or use a new one'''.format(name))
         # relies on the monthly version in case the timespan covers more than a month
         else:
             savedInterval = interval
-            print('Birthdays between {0} and {1}:'.format(currentDate, currentDate + timedelta(days = savedInterval)))
+            #~ print('Birthdays between {0} and {1}:'.format(currentDate, currentDate + timedelta(days = savedInterval)))
             
             currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
-            print('  in {0}: '.format(calendar.month_name[currentMonth]))
+            print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
             for dayNode in currentMonthNode.iter('day'):
                 dayIndex = dayNode.get('index')
                 if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:

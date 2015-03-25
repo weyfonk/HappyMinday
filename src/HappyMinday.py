@@ -12,30 +12,25 @@ import sys
 from datetime import date
 from BirthdayTree import BirthdayTree
 
+QUIT_KEY = 'Q'
+
 def main(argv):
     fileName = 'birthdays.xml'
     path = os.path.abspath(fileName)
     
     bt = BirthdayTree(path)
 
-    #idea: add parameters like timespan (ex. next x day(s)/week(s)/month(s)) for reminder
-    # + search function (by month, by day, by name, by year)
+    #idea:  search function (by month, by day, by name, by year)
     
     if len(argv) == 0:
-        
-        if(bt.is_empty()):
-            print('Error: no data in {0}!'.format(path))
-            return
-        
-        bt.show_next_month_data()
-        
+        print('----- Welcome to HappyMinday!----- \n')
+        loop_insert_entries(bt)
         
     else:
         if argv[0].upper() == '-A':
             
             if(len(argv) != 5
                or not validate_date(argv[2], argv[3], argv[4])):
-                print('Error: incorrect command syntax')
                 return
             
             person = argv[1]
@@ -80,6 +75,25 @@ def main(argv):
             bt.update_entry(oldName, newName)
             
         bt.indent(bt._root, 0)
+
+
+def loop_insert_entries(birthdayTree):
+    
+    userInput = ''
+    
+    print('Welcome to init mode.')
+    print('You will be able to add as many birthdays as you wish.')
+    print('Press {0} when you are done'.format(QUIT_KEY))
+    
+    while True:
+        print('New birthday: ')
+        name = validate_input('\t-Name: ')
+        year = validate_input('\t-Year of birth: ')
+        month = validate_input('\t-Month of birth: ')
+        day = validate_input('\t-Day of birth: ')
+        
+        if validate_date(month, day, year):
+            birthdayTree.add_entry(name, month, day, year)
             
 
 def validate_date(month, day, year):
@@ -94,9 +108,22 @@ def validate_date(month, day, year):
     isDayOk = dayVal >= 1 and dayVal <= daysInMonth
     isMonthOk = monthVal >= 1 and monthVal <= 12
     
-    return isDayOk and isMonthOk
+    isDateOk = isDayOk and isMonthOk
+    
+    if not isDateOk:
+        print('Error: incorrect date')
+    
+    return isDateOk
 
 
+''' Displays a message to the user, checks whether the user chose to quit the program.
+ If no quit is needed, returns user input'''
+def validate_input(msg):
+    result = input(msg)
+    if result.upper() == QUIT_KEY:
+        print('Quitting.')
+        quit()
+    return result
      
 
 if __name__ == '__main__':
