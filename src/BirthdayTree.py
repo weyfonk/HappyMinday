@@ -34,14 +34,14 @@ class BirthdayTree(object):
         
         def lower_case(context, text):
             """
-            XPath extension method to enable case-insensitive X-Path search
+            XPath extension method to enable case-insensitive XPath search
             as explained at: http://lxml.de/extensions.html
             """
             result = []
             for t in text:
                 result.append(t.lower())
             return result
-        
+            
         ns = etree.FunctionNamespace(None)
         ns['lower-case'] = lower_case
 
@@ -214,16 +214,17 @@ Please update the existing name or use a new one'''.format(name))
             
             currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
             print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
-            for dayNode in currentMonthNode.iter('day'):
-                dayIndex = dayNode.get('index')
-                if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
-                    for person in dayNode.iter('person'): 
-                        print('\t -{0}: {1} ({2})'.format(
-                            dayIndex,
-                            person.get('name'),
-                            date.today().year - int(person.get('year'))
+            if currentMonthNode is not None:
+                for dayNode in currentMonthNode.iter('day'):
+                    dayIndex = dayNode.get('index')
+                    if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
+                        for person in dayNode.iter('person'): 
+                            print('\t -{0}: {1} ({2})'.format(
+                                dayIndex,
+                                person.get('name'),
+                                date.today().year - int(person.get('year'))
+                                )
                             )
-                        )
             # if interval goes further than current month, add results for following months
             if savedInterval >= remainingDaysInMonth:
                 savedInterval = savedInterval - remainingDaysInMonth - 1
@@ -246,7 +247,7 @@ Please update the existing name or use a new one'''.format(name))
     
     
     def find_by_name(self, name):
-        result = self._root.xpath(".//person[lower-case(@name)='{0}']".format(name.lower()))
+        result = self._root.xpath(".//person[contains(lower-case(@name),'{0}')]".format(name.lower()))
         return result
     
     def indent(self, elem, level=0):
