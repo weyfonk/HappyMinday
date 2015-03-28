@@ -64,7 +64,7 @@ def main(argv):
             
         if argv[0].upper() == '-P':
             name = argv[1]
-            bt.search_name_entry(name)
+            bt.search_name_entry(name, False)
             
         if argv[0].upper() == '-C':
             bt.count_entries()

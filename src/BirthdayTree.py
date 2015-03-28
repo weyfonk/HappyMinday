@@ -48,8 +48,9 @@ class BirthdayTree(object):
         
     def add_entry(self, name, month, day, year):
 
-        existingEntry = self.find_by_name(name)
-        if existingEntry is not None:
+        existingEntry = self.find_by_name(name, True)
+        
+        if existingEntry is not None and len(existingEntry) > 0:
             print('''An entry already exists for {0}. 
 Please update the existing name or use a new one'''.format(name))
             return False
@@ -112,7 +113,7 @@ Please update the existing name or use a new one'''.format(name))
             
         self.save_file()
         self.indent(self._root, 0)
-        self.search_name_entry(name)
+        self.search_name_entry(name, True)
         return True                
     
     
@@ -151,9 +152,9 @@ Please update the existing name or use a new one'''.format(name))
         print('Birthday deleted for {0}'.format(name))
         
     
-    def search_name_entry(self, name):
-        nameNodes = self.find_by_name(name)
-        if nameNodes is None:
+    def search_name_entry(self, name, isExactMatch=False):
+        nameNodes = self.find_by_name(name, isExactMatch)
+        if nameNodes is None or len(nameNodes) == 0:
             print('Name not found: {0}'.format(name))
             return
         
@@ -236,7 +237,7 @@ Please update the existing name or use a new one'''.format(name))
     
     
     def update_entry(self, oldName, newName):
-        nodeToUpdate = self.find_by_name(oldName)
+        nodeToUpdate = self.find_by_name(oldName, True)
 
         if nodeToUpdate is None:
             print('No birthday found for {0} to update'.format(oldName))
@@ -246,11 +247,19 @@ Please update the existing name or use a new one'''.format(name))
         self.save_file()
     
     
-    def find_by_name(self, name):
-        result = self._root.xpath(".//person[contains(lower-case(@name),'{0}')]".format(name.lower()))
+    def find_by_name(self, name, isExactMatch):
+        if isExactMatch:
+            searchExpression = ".//person[lower-case(@name)='{0}']".format(name.lower())
+        else:
+            searchExpression = ".//person[contains(lower-case(@name),'{0}')]".format(name.lower())
+            
+        result = self._root.xpath(searchExpression)
         return result
     
     def indent(self, elem, level=0):
+        """
+        Indents the XML file properly
+        """
         i = "\n" + level*"  "
         if len(elem):
             if not elem.text or not elem.text.strip():
@@ -270,7 +279,13 @@ Please update the existing name or use a new one'''.format(name))
     
     
     def is_empty(self):
+        """
+        Detects whether the birthday tree is empty (meaning it does not have any month node)
+        """
         return len(list(self._root.iter('month'))) == 0
         
     def save_file(self):
+        """
+        Saves changes to the birthday tree
+        """
         self._data.write(self._path)
