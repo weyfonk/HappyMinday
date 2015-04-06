@@ -5,6 +5,7 @@ Created on 17.03.2015
 
 @author: tan
 '''
+import argparse
 import calendar
 import os
 import sys
@@ -14,7 +15,21 @@ from BirthdayTree import BirthdayTree
 
 QUIT_KEY = 'Q'
 
-def main(argv):
+def main():
+    
+    parser = argparse.ArgumentParser(description='Manages a birthday collection')
+    parser.add_argument('-a', '--add', help='Add an entry', action='store_true', required=False)
+    parser.add_argument('-c', '--count', help='Count the entries', action='store_true', required=False)
+    parser.add_argument('-d', '--day', help='Display entries for next X days', type=int, required=False)
+    parser.add_argument('-i', '--init', help='Insert many entries', action='store_true', required=False)
+    parser.add_argument('-m', '--month', help='Display entries for next X months', type=int, required=False)
+    parser.add_argument('-r', '--remove', help='Remove an entry', required=False)
+    parser.add_argument('-s', '--search', help='Search entries', required=False)
+    parser.add_argument('-u', '--update', help='Update an entry', required=False)
+    
+    args = parser.parse_args()
+    
+    
     fileName = 'birthdays.xml'
     path = os.path.abspath(fileName)
     
@@ -22,81 +37,71 @@ def main(argv):
 
     #idea:  search function (by month, by day, by name, by year)
     
-    if len(argv) == 0:
+    if args.init:
         print('----- Welcome to HappyMinday!----- \n')
-        loop_insert_entries(bt)
+        insert_entries(bt, True)
         
     else:
-        if argv[0].upper() == '-A':
-            
-            if(len(argv) != 5
-               or not validate_date(argv[2], argv[3], argv[4])):
-                return
-            
-            person = argv[1]
-            month = int(argv[2])
-            day = int(argv[3])
-            year = int(argv[4])
-            
-            result = bt.add_entry(person, month, day, year)
+        if args.add:
+            result = insert_entries(bt, False)
             
             if(result):
                 print('Birthday added')
 
-        if argv[0].upper() == '-S':
+        if args.search:
+            name = args.search
+            bt.search_name_entry(name, False)
             
-            # syntax -S d 5 (5 next days) / -S m 3 (3 next months)
-            if argv[1].upper() == 'M':
-                searchByMonth = True
+        if args.month or args.day:
+                searchByMonth = args.month
+                interval = args.month if args.month else args.day
+                bt.search_next_entries(searchByMonth, interval)
             
-            if argv[1].upper() == 'D':
-                searchByMonth = False
-            
-            if argv[2].isdigit():
-                interval = int(argv[2])
-            
-            bt.search_next_entries(searchByMonth, interval)
-            
-        if argv[0].upper() == '-D':
-            name = argv[1]
+        if args.remove:
+            name = args.remove
             
             bt.delete_entry(name)
             
-        if argv[0].upper() == '-P':
-            name = argv[1]
-            bt.search_name_entry(name, False)
-            
-        if argv[0].upper() == '-C':
+        if args.count:
             bt.count_entries()
             
-        if argv[0].upper() == '-U':
-            oldName = argv[1]
-            newName = argv[2]
+        if args.update:
+            oldName = args.update
+            newName = input('Choose a new name for {0}: \n'.format(oldName))
             bt.update_entry(oldName, newName)
             
         bt.indent(bt._root, 0)
 
 
-def loop_insert_entries(birthdayTree):
+def insert_entries(birthdayTree, isLoop):
     """
     Lets the user insert as many entries as wanted
     """
+    if isLoop:
+        print('Welcome to init mode.')
+        print('You will be able to add as many birthdays as you wish.')
+        print('Press {0} when you are done'.format(QUIT_KEY))
     
-    userInput = ''
-    
-    print('Welcome to init mode.')
-    print('You will be able to add as many birthdays as you wish.')
-    print('Press {0} when you are done'.format(QUIT_KEY))
-    
-    while True:
-        print('New birthday: ')
+    if not isLoop:
+        result = add_entry(birthdayTree)
+    else:
+        while True:
+            print('New birthday: ')
+            result = add_entry(birthdayTree)
+    return result
+            
+        
+def add_entry(birthdayTree):
+        """
+        Adds an entry
+        """
         name = validate_input('\t-Name: ')
         year = validate_input('\t-Year of birth: ')
         month = validate_input('\t-Month of birth: ')
         day = validate_input('\t-Day of birth: ')
         
         if validate_date(month, day, year):
-            birthdayTree.add_entry(name, month, day, year)
+            return birthdayTree.add_entry(name, month, day, year)
             
 
 def validate_date(month, day, year):
@@ -140,4 +145,4 @@ if __name__ == '__main__':
 
 
 
-main(sys.argv[1:])
+main()

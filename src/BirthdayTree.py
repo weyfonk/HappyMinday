@@ -158,25 +158,25 @@ Please update the existing name or use a new one'''.format(name))
             print('Name not found: {0}'.format(name))
             return
         
-        nameNode = nameNodes[0] #idea: handle several results
-        
-        year = nameNode.get('year')
-        realName = nameNode.get('name')
-        month = int(nameNode.getparent().getparent().get('index'))
-        monthStr = calendar.month_name[month]
-        day = nameNode.getparent().get('index')
-        age = date.today().year - int(year)
-        # if birthday was earlier this year, show next year's age
-        if(month < date.today().month 
-           or (month == date.today().month and int(day) < date.today().day)):
-            age = age + 1
-        
-        print('Next birthday for {0}: {1} {2} ({3})'.format(
-			realName, 
-			monthStr,
-            day,
-			age
-			))
+        for i in range(len(nameNodes)):            
+            nameNode = nameNodes[i]
+            year = nameNode.get('year')
+            realName = nameNode.get('name')
+            month = int(nameNode.getparent().getparent().get('index'))
+            monthStr = calendar.month_name[month]
+            day = nameNode.getparent().get('index')
+            age = date.today().year - int(year)
+            # if birthday was earlier this year, show next year's age
+            if(month < date.today().month 
+               or (month == date.today().month and int(day) < date.today().day)):
+                age = age + 1
+            
+            print('Next birthday for {0}: {1} {2} ({3})'.format(
+                realName, 
+                monthStr,
+                day,
+                age
+                ))
     
     def search_next_entries(self, searchByMonth, interval, currentDate=date.today()):
 #         currentMonth = 12
@@ -237,7 +237,7 @@ Please update the existing name or use a new one'''.format(name))
     
     
     def update_entry(self, oldName, newName):
-        nodeToUpdate = self.find_by_name(oldName, True)
+        nodeToUpdate = self.find_by_name(oldName, True)[0]
 
         if nodeToUpdate is None:
             print('No birthday found for {0} to update'.format(oldName))
