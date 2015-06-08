@@ -9,7 +9,6 @@ import argparse
 import calendar
 import os
 import sys
-# import xml.etree.ElementTree as ET
 from datetime import date
 from BirthdayTree import BirthdayTree
 
@@ -52,7 +51,8 @@ def main():
             name = args.search
             bt.search_name_entry(name, False)
             
-        if args.month or args.day:
+        if (args.month is not None and args.month >= 0) \
+         or (args.day is not None and args.day >= 0):
                 searchByMonth = args.month
                 interval = args.month if args.month else args.day
                 bt.search_next_entries(searchByMonth, interval)
@@ -92,16 +92,16 @@ def insert_entries(birthdayTree, isLoop):
             
         
 def add_entry(birthdayTree):
-        """
-        Adds an entry
-        """
-        name = validate_input('\t-Name: ')
-        year = validate_input('\t-Year of birth: ')
-        month = validate_input('\t-Month of birth: ')
-        day = validate_input('\t-Day of birth: ')
-        
-        if validate_date(month, day, year):
-            return birthdayTree.add_entry(name, month, day, year)
+    """
+    Adds an entry
+    """
+    name = validate_input('\t-Name: ')
+    year = validate_input('\t-Year of birth: ')
+    month = validate_input('\t-Month of birth: ')
+    day = validate_input('\t-Day of birth: ')
+    
+    if validate_date(month, day, year):
+        return birthdayTree.add_entry(name, month, day, year)
             
 
 def validate_date(month, day, year):

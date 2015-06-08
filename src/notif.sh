@@ -3,7 +3,10 @@
 # in a notification bubble, using notify-send
 
 data=$1
-displayed_text=""
-while read data; do displayed_text+=$'\n'$data; done;
+#second argument can be an additional message
+displayed_text=$2
+while read data; do displayed_text+=$data$'\n'; done;
 
-notify-send "$displayed_text" 
+if [ "$displayed_text" ]
+then notify-send "$displayed_text" 
+fi

@@ -94,7 +94,7 @@ Please update the existing name or use a new one'''.format(name))
                     and int(child.getnext().get('index')) > day):
                     indexAfterInsert = list(monthNode).index(child.getnext())
             
-            #print(indexAfterInsert)
+            #~ print(indexAfterInsert)
             
             dayNode = etree.Element('day')
             dayNode.set('index', str(day))
@@ -104,7 +104,7 @@ Please update the existing name or use a new one'''.format(name))
             else:
                 monthNode.insert(indexAfterInsert, dayNode)
         else:
-            print("day found")    
+            #~ print("day found")    
             dayNode = currentDayNodes[0]
             
         newBirthday = etree.SubElement(dayNode, 'person')
@@ -180,6 +180,8 @@ Please update the existing name or use a new one'''.format(name))
     
     def search_next_entries(self, searchByMonth, interval, currentDate=date.today()):
 #         currentMonth = 12
+        birthdayText = 'Today ({0}) is {1}\'s birthday ({2})!'\
+            if interval == 0 else '\t -{0}: {1} ({2})'
         lastMonth = (currentDate.month + interval) % 12
         
         currentMonth = currentDate.month
@@ -214,13 +216,15 @@ Please update the existing name or use a new one'''.format(name))
             #~ print('Birthdays between {0} and {1}:'.format(currentDate, currentDate + timedelta(days = savedInterval)))
             
             currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
-            print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
+            
+            if interval > 0:
+                print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
             if currentMonthNode is not None:
                 for dayNode in currentMonthNode.iter('day'):
                     dayIndex = dayNode.get('index')
                     if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
                         for person in dayNode.iter('person'): 
-                            print('\t -{0}: {1} ({2})'.format(
+                            print(birthdayText.format(
                                 dayIndex,
                                 person.get('name'),
                                 date.today().year - int(person.get('year'))
