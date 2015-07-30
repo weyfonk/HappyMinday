@@ -7,7 +7,9 @@ Created on 21.03.2015
 from datetime import date, timedelta
 from lxml import etree
 import calendar
+import collections
 import os
+import shutil
 
 
 class BirthdayTree(object):
@@ -31,6 +33,7 @@ class BirthdayTree(object):
         self._root = self._data.getroot()
 
         self._monthNodes = self._root.iter('month')
+        self._indent_after_treatment = True
         
         def lower_case(context, text):
             """
@@ -240,6 +243,32 @@ Please update the existing name or use a new one'''.format(name))
         self.search_next_entries(True, 1)
     
     
+    def sort_entries(self):
+        """
+        Sorts the entries by day within each month
+        """
+        bkp_path = self._path + '.old'
+        shutil.move(self._path, bkp_path)
+        with open(self._path, mode = 'w', encoding = 'utf-8') as newFile:
+            root = etree.Element('birthdays')
+            newTree = etree.ElementTree(root)
+            for elt in self._monthNodes:
+                month = int(elt.get('index'))
+                monthNode = etree.SubElement(root, 'month')
+                monthNode.set('index', str(month))
+                currentMonthDays = dict()
+                for dayNode in elt.iter('day'):
+                    dayIndex = int(dayNode.get('index'))
+                    currentMonthDays[dayIndex] = dayNode
+                orderedDays = collections.OrderedDict(sorted(currentMonthDays.items()))
+                #print('Mois ' + elt.get('index') + ' : ' + str(len(orderedDays)) + '\n')
+                for k,v in orderedDays.items():
+                    #print(str(k))
+                    monthNode.append(v)
+                newTree.write(self._path) 
+                self._indent_after_treatment = False
+
+
     def update_entry(self, oldName, newName):
         nodeToUpdate = self.find_by_name(oldName, True)[0]
 
@@ -280,7 +309,7 @@ Please update the existing name or use a new one'''.format(name))
                 
         if(level == 0):
             self._data.write(self._path)
-    
+
     
     def is_empty(self):
         """

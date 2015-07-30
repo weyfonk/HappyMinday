@@ -24,6 +24,7 @@ def main():
     parser.add_argument('-m', '--month', help='Display entries for next X months', type=int, required=False)
     parser.add_argument('-r', '--remove', help='Remove an entry', required=False)
     parser.add_argument('-s', '--search', help='Search entries', required=False)
+    parser.add_argument('-o', '--sort', help='Sort entries', action='store_true', required=False)
     parser.add_argument('-u', '--update', help='Update an entry', required=False)
     
     args = parser.parse_args()
@@ -64,13 +65,17 @@ def main():
             
         if args.count:
             bt.count_entries()
+
+        if args.sort:
+            bt.sort_entries()
             
         if args.update:
             oldName = args.update
             newName = input('Choose a new name for {0}: \n'.format(oldName))
             bt.update_entry(oldName, newName)
             
-        bt.indent(bt._root, 0)
+        if bt._indent_after_treatment:
+            bt.indent(bt._root, 0)
 
 
 def insert_entries(birthdayTree, isLoop):
