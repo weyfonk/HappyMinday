@@ -107,7 +107,7 @@ Please update the existing name or use a new one'''.format(name))
             else:
                 monthNode.insert(indexAfterInsert, dayNode)
         else:
-            #~ print("day found")    
+            # print("day found")    
             dayNode = currentDayNodes[0]
             
         newBirthday = etree.SubElement(dayNode, 'person')

@@ -9,6 +9,7 @@ import argparse
 import calendar
 import os
 import sys
+import traceback
 from datetime import date
 from BirthdayTree import BirthdayTree
 
@@ -36,46 +37,50 @@ def main():
     bt = BirthdayTree(path)
 
     #idea:  search function (by month, by day, by name, by year)
-    
-    if args.init:
-        print('----- Welcome to HappyMinday!----- \n')
-        insert_entries(bt, True)
-        
-    else:
-        if args.add:
-            result = insert_entries(bt, False)
+    try: 
+        if args.init:
+            print('----- Welcome to HappyMinday!----- \n')
+            insert_entries(bt, True)
             
-            if(result):
-                print('Birthday added')
+        else:
+            if args.add:
+                result = insert_entries(bt, False)
+                
+                if(result):
+                    print('Birthday added')
 
-        if args.search:
-            name = args.search
-            bt.search_name_entry(name, False)
-            
-        if (args.month is not None and args.month >= 0) \
-         or (args.day is not None and args.day >= 0):
-                searchByMonth = args.month
-                interval = args.month if args.month else args.day
-                bt.search_next_entries(searchByMonth, interval)
-            
-        if args.remove:
-            name = args.remove
-            
-            bt.delete_entry(name)
-            
-        if args.count:
-            bt.count_entries()
+            if args.search:
+                name = args.search
+                bt.search_name_entry(name, False)
+                
+            if (args.month is not None and args.month >= 0) \
+             or (args.day is not None and args.day >= 0):
+                    searchByMonth = args.month
+                    interval = args.month if args.month else args.day
+                    bt.search_next_entries(searchByMonth, interval)
+                
+            if args.remove:
+                name = args.remove
+                
+                bt.delete_entry(name)
+                
+            if args.count:
+                bt.count_entries()
 
-        if args.sort:
-            bt.sort_entries()
-            
-        if args.update:
-            oldName = args.update
-            newName = input('Choose a new name for {0}: \n'.format(oldName))
-            bt.update_entry(oldName, newName)
-            
-        if bt._indent_after_treatment:
-            bt.indent(bt._root, 0)
+            if args.sort:
+                bt.sort_entries()
+                
+            if args.update:
+                oldName = args.update
+                newName = input('Choose a new name for {0}: \n'.format(oldName))
+                bt.update_entry(oldName, newName)
+                
+            if bt._indent_after_treatment:
+                bt.indent(bt._root, 0)
+    except KeyboardInterrupt:
+        print('\n Operation interrupted by the user. See you soon!')
+    except:
+        print('An error occurred: \n {0}'.format(traceback.format_exc()))
 
 
 def insert_entries(birthdayTree, isLoop):
