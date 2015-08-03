@@ -6,17 +6,17 @@ usage: HappyMinday.py [-h] [-a] [-c] [-d DAY] [-i] [-m MONTH] [-r REMOVE]
 Manages a birthday collection
 
 optional arguments:
-  -h, --help            show this help message and exit
-  -a, --add             Add an entry
-  -c, --count           Count the entries
-  -d DAY, --day DAY     Display entries for next X days
-  -i, --init            Insert many entries
-  -m MONTH, --month MONTH
-                        Display entries for next X months
-  -r REMOVE, --remove REMOVE
-                        Remove an entry
-  -s SEARCH, --search SEARCH
-                        Search entries
-  -o, --sort            Sort entries
-  -u UPDATE, --update UPDATE
-                        Update an entry
+  -h, --help            show this help message and exit  
+  -a, --add             Add an entry  
+  -c, --count           Count the entries  
+  -d DAY, --day DAY     Display entries for next X days  
+  -i, --init            Insert many entries  
+  -m MONTH, --month MONTH  
+                        Display entries for next X months  
+  -r REMOVE, --remove REMOVE  
+                        Remove an entry  
+  -s SEARCH, --search SEARCH  
+                        Search entries  
+  -o, --sort            Sort entries  
+  -u UPDATE, --update UPDATE  
+                        Update an entry  
