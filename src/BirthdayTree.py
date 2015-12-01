@@ -183,8 +183,11 @@ Please update the existing name or use a new one'''.format(name))
     
     def search_next_entries(self, searchByMonth, interval, currentDate=date.today()):
 #         currentMonth = 12
+
+        today = date.today()
+
         birthdayText = 'Today ({0}) is {1}\'s birthday ({2})!'\
-            if interval == 0 and not searchByMonth and currentDate == date.today() \
+            if interval == 0 and not searchByMonth and currentDate == today \
             else '\t -{0}: {1} ({2})'
 
         currentMonth = currentDate.month
@@ -205,7 +208,7 @@ Please update the existing name or use a new one'''.format(name))
                    or (lastMonth < currentMonth
                      and(localMonth > currentMonth
                       or localMonth < lastMonth))):
-                          nbDaysInLocalMonth = calendar.monthrange(date.today().year, localMonth)[1]
+                          nbDaysInLocalMonth = calendar.monthrange(today.year, localMonth)[1]
                           daysInterval = daysInterval + nbDaysInLocalMonth
                           
                 if localMonth == lastMonth:
@@ -221,7 +224,7 @@ Please update the existing name or use a new one'''.format(name))
             
             currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
             
-            if interval > 0:
+            if interval > 0 or currentDate != today:
                 print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
             if currentMonthNode is not None:
                 for dayNode in currentMonthNode.iter('day'):
