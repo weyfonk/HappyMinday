@@ -184,17 +184,19 @@ Please update the existing name or use a new one'''.format(name))
     def search_next_entries(self, searchByMonth, interval, currentDate=date.today()):
 #         currentMonth = 12
         birthdayText = 'Today ({0}) is {1}\'s birthday ({2})!'\
-            if interval == 0 else '\t -{0}: {1} ({2})'
-        lastMonth = (currentDate.month + interval) % 12
-        
+            if interval == 0 and not searchByMonth and currentDate == date.today() \
+            else '\t -{0}: {1} ({2})'
+
         currentMonth = currentDate.month
+        lastMonth = (currentMonth + interval) % 12
+        
         nbDaysInCurrentMonth = calendar.monthrange(date.today().year, currentMonth)[1]
         remainingDaysInMonth = nbDaysInCurrentMonth - currentDate.day
         
         # search entries for current month and the next ones
         # depends on current day
         # ex: if called on Oct. 12 for 2 months, covers Oct 12 to Dec 12
-        if(searchByMonth):
+        if searchByMonth:
             daysInterval = remainingDaysInMonth
             for element in self._monthNodes:
                 localMonth = int(element.get('index'))
@@ -205,7 +207,6 @@ Please update the existing name or use a new one'''.format(name))
                       or localMonth < lastMonth))):
                           nbDaysInLocalMonth = calendar.monthrange(date.today().year, localMonth)[1]
                           daysInterval = daysInterval + nbDaysInLocalMonth
-                          
                           
                 if localMonth == lastMonth:
                     daysInterval = daysInterval + currentDate.day
