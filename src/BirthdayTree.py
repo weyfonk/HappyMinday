@@ -168,11 +168,7 @@ Please update the existing name or use a new one'''.format(name))
             month = int(nameNode.getparent().getparent().get('index'))
             monthStr = calendar.month_name[month]
             day = nameNode.getparent().get('index')
-            age = date.today().year - int(year)
-            # if birthday was earlier this year, show next year's age
-            if(month < date.today().month 
-               or (month == date.today().month and int(day) < date.today().day)):
-                age = age + 1
+            age = self.get_age(year, month, day)
             
             print('Next birthday for {0}: {1} {2} ({3})'.format(
                 realName, 
@@ -231,10 +227,11 @@ Please update the existing name or use a new one'''.format(name))
                     dayIndex = dayNode.get('index')
                     if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
                         for person in dayNode.iter('person'): 
+                            age = self.get_age(person.get('year'), currentMonth, dayIndex)
                             print(birthdayText.format(
                                 dayIndex,
                                 person.get('name'),
-                                date.today().year - int(person.get('year'))
+                                age
                                 )
                             )
             # if interval goes further than current month, add results for following months
@@ -326,3 +323,17 @@ Please update the existing name or use a new one'''.format(name))
         Saves changes to the birthday tree
         """
         self._data.write(self._path)
+
+    def get_age(self, year, month, day):
+        """
+        Computes an age based on a birth date 
+        """
+        year = int(year)
+        month = int(month)
+        day = int(day)
+        age = date.today().year - year
+         # if birthday was earlier this year, show next year's age
+        if(month < date.today().month                
+            or (month == date.today().month and day < date.today().day)):
+            age = age +1
+        return age

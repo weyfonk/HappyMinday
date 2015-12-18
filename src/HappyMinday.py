@@ -61,7 +61,6 @@ def main():
                 
             if args.remove:
                 name = args.remove
-                
                 bt.delete_entry(name)
                 
             if args.count:
