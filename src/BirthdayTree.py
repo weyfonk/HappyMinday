@@ -184,7 +184,7 @@ Please update the existing name or use a new one'''.format(name))
 
         birthdayText = 'Today ({0}) is {1}\'s birthday ({2})!'\
             if interval == 0 and not searchByMonth and currentDate == today \
-            else '\t -{0}: {1} ({2})'
+            else '\t -{0}: {1} ({2})\n'
 
         currentMonth = currentDate.month
         lastMonth = (currentMonth + interval) % 12
@@ -220,25 +220,28 @@ Please update the existing name or use a new one'''.format(name))
             
             currentMonthNode = self._root.find(".//month/[@index='{0}']".format(currentMonth))
             
-            if interval > 0 or currentDate != today:
-                print('Birthdays in {0}: '.format(calendar.month_name[currentMonth]))
+            monthText = ''
+            
             if currentMonthNode is not None:
                 for dayNode in currentMonthNode.iter('day'):
                     dayIndex = dayNode.get('index')
                     if currentDate.day <=  int(dayIndex) <= currentDate.day + interval:
                         for person in dayNode.iter('person'): 
+                            if not monthText:
+                                monthText += 'Birthdays in {0}: \n'.format(calendar.month_name[currentMonth])
                             age = self.get_age(person.get('year'), currentMonth, dayIndex)
-                            print(birthdayText.format(
+                            monthText += birthdayText.format(
                                 dayIndex,
                                 person.get('name'),
                                 age
                                 )
-                            )
+            print(monthText)
+                            
             # if interval goes further than current month, add results for following months
             if savedInterval >= remainingDaysInMonth:
                 savedInterval = savedInterval - remainingDaysInMonth - 1
                 self.search_next_entries(False, savedInterval, currentDate + timedelta(days = remainingDaysInMonth + 1))
-    
+             
         
     def show_next_month_data(self):
         self.search_next_entries(True, 1)
