@@ -235,7 +235,8 @@ Please update the existing name or use a new one'''.format(name))
                                 person.get('name'),
                                 age
                                 )
-            print(monthText)
+            if monthText:
+                print(monthText)
                             
             # if interval goes further than current month, add results for following months
             if savedInterval >= remainingDaysInMonth:
