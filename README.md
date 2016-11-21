@@ -1,6 +1,13 @@
 This (hopefully) simple program is mainly aimed at saving and querying birthdays, by means of an XML file and a few commands.
 
-usage: HappyMinday.py [-h] [-a] [-c] [-d DAY] [-i] [-m MONTH] [-r REMOVE]
+## Dependencies
+
+    * Python 3
+    * lxml
+
+## Usage
+
+HappyMinday.py [-h] [-a] [-c] [-d DAY] [-i] [-m MONTH] [-r REMOVE]
                       [-s SEARCH] [-o] [-u UPDATE]
 
 Manages a birthday collection
