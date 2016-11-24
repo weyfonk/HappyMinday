@@ -8,6 +8,7 @@ Created on 17.03.2015
 import argparse
 import calendar
 import os
+from os.path import expanduser
 import sys
 import traceback
 from datetime import date
@@ -31,7 +32,7 @@ def main():
     args = parser.parse_args()
     
     
-    fileName = 'birthdays.xml'
+    fileName = expanduser('~') + '/.config/birthdays.xml'
     path = os.path.abspath(fileName)
     
     bt = BirthdayTree(path)
